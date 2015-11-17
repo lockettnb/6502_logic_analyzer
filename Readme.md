@@ -37,4 +37,4 @@ The minus sign (-) show data reads and plus signs (+) show data writes.
     f803- 04 
 
 PS... the code is from the first Meet-Me Conference Bridge which was
-developed on an Ohio Scientific computer.
+developed by NBTel on an Ohio Scientific computer.
