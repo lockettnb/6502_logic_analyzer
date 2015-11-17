@@ -105,7 +105,7 @@ int raddr;
 char result[16];
 
     if (arg[0]) {
-Serial.println(arg[0]);
+    Serial.println(arg[0]);
         raddr = strtol(arg[0], NULL, 16);
         trigger = raddr;
     } 
@@ -328,7 +328,7 @@ int main(void)
 {
 char line[MAXLINE];
 char *command;
-char *arg_list[32];
+char *arg_list[8];
 int i,j;
 
 setup();

@@ -132,7 +132,7 @@ char *addr;
 char buf[32];
 char resetvector[6]="fffc";
 
-    addr = resetvector;
+    addr = " ";
     if(arg[0] != NULL) {
         addr = arg[0]; 
     }
