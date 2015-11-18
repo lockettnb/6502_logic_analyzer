@@ -36,5 +36,5 @@ The minus sign (-) show data reads and plus signs (+) show data writes.
     a018  8d 03 f8  STA $f803
     f803- 04 
 
-PS... the code is from the first Meet-Me Conference Bridge which was
+PS... this assembler code is from the first Meet-Me Conference Bridge which was
 developed by NBTel on an Ohio Scientific computer.
