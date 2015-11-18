@@ -76,7 +76,10 @@ all: $(TARGET).hex
 %.elf: %.o
 	$(CC) $(LDFLAGS) -o "$@" "$<" -L$(LIB) $(LIBS)
 
+# if we upload while cli65 has ttyACM0 open the teensy will reboot   
+# and find port 0 busy and get added as ttyACM1 ....the wrong port
 upload: $(TARGET).hex
+	-killall cli65
 	$(abspath $(TOOLSPATH))/teensy_post_compile -file=$(TARGET) -path=$(shell pwd) -tools=$(abspath $(TOOLSPATH))
 	-$(abspath $(TOOLSPATH))/teensy_reboot
 
