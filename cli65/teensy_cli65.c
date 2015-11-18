@@ -12,6 +12,8 @@
 #include <stdint.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
+
 #include "serial.h"
 
 #define TRUE 1
@@ -22,6 +24,7 @@
 // Global Variables
 char *program_name;
 int port;               // file handle for tty port
+int done = FALSE;
 
 // buffer to receive response from teensy
 char rx_buffer[RX_BUFFERSIZE];
@@ -95,7 +98,7 @@ char *helptext[] = {
     "set     +set trigger address     -- set <addr>",
     "run     +run caputre and record data at trigger address",
     "disp    +display                 -- disp <start addr> [end addr]",
-    "dump    +dump entire data buffer",
+    "dump    +dump entire data buffer -- dump <filename> ",
     "history +display command history",
     "q       +exit program",
     "quit    +exit program",
@@ -112,9 +115,14 @@ char *helptext[] = {
 void xalive(char *arg[])
 {
 char buf[32];
+int rc;
 
     sprintf(buf, "at\n");
-    serialport_write(port, buf);    
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Alive: failed to write to Teensy serial port\n");
+        return;
+    }
     read_response(rx_buffer);
 }
 
@@ -122,7 +130,7 @@ char buf[32];
 void xquit(char *arg[])
 {
     printf(">>quit and exit\n");
-    exit(0);
+    done = TRUE;
 }
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -131,6 +139,7 @@ void xset(char *arg[])
 char *addr;
 char buf[32];
 char resetvector[6]="fffc";
+int rc;
 
     addr = " ";
     if(arg[0] != NULL) {
@@ -138,7 +147,13 @@ char resetvector[6]="fffc";
     }
 
     sprintf(buf, "t %s\r", addr);
-    serialport_write(port, buf);    
+
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Set: failed to write to Teensy serial port\n");
+        return;
+    }
+
     read_response(rx_buffer);
 }
 
@@ -146,8 +161,14 @@ char resetvector[6]="fffc";
 void xrun(char *arg[])
 {
 char buf[32];
+int rc;
+
     sprintf(buf, "r\r");
-    serialport_write(port, buf);    
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Run: failed to write to Teensy serial port\n");
+        return;
+    }
     read_response(rx_buffer);
 }
 
@@ -157,12 +178,19 @@ void xdisp(char *arg[])
 char buf[32];
 char *start = "0";
 char *end = "32";
+int rc;
 
     if(arg[0] != NULL) start = arg[0]; 
     if(arg[1] != NULL) end = arg[1]; 
 
     sprintf(buf, "d %s %s \r", start, end);
-    serialport_write(port, buf);    
+
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Display: failed to write to Teensy serial port\n");
+        return;
+    }
+
     read_response(rx_buffer);
 }
 
@@ -171,15 +199,21 @@ void xdump(char *arg[])
 {
 char buf[32];
 FILE *fp;
-
+int rc;
     sprintf(buf, "dd\r");
-    serialport_write(port, buf);    
+
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Dump: failed to write to Teensy serial port\n");
+        return;
+    }
+
     read_response(rx_buffer);
 
     if(arg[0] != NULL){
         fp=fopen(arg[0], "w"); 
         if(fp == NULL) {
-            printf("DUMP: Error opending file\n");
+            fprintf(stderr, "Dump: Error opending file\n");
             return;
         }
         fprintf(fp, "%s", rx_buffer);
@@ -202,6 +236,12 @@ void xhistory(char *arg[])
 }
 
 
+void int_handler(int sig) {
+
+    printf("\n stopping CLI process \n");
+    done = TRUE;
+}
+    
 
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -210,6 +250,8 @@ main (int argc, char *argv[])
 char *line, *trimline, *command;
 char *arg_list[12];
 int i,j; 
+struct termios old_termio;
+
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // monitor command list
 struct cmd {
@@ -231,17 +273,18 @@ struct cmd cmdlist[] = {
     {'\0',      NULL  }
 };
 
+signal(SIGINT, int_handler);
+
 // open port then wait a bit for port to reset
-port = serialport_init( "/dev/ttyACM0", 115200);
+port = serialport_init( "/dev/ttyACM0", 115200, &old_termio);
 sleep(2);
-// test if it is alive
 xalive(arg_list);
 
 // loop reading and executing commands  
-while (1) {
-    line = readline ("t6502> ");
+while (! done) {
+    line = readline ("CLI6502> ");
     if (line == NULL) { 
-        fprintf(stderr, "Error: failed to read command line\n");
+        fprintf(stderr, "Read Loop: failed to read command line\n");
         exit(1);
     }
 
@@ -268,6 +311,7 @@ while (1) {
     }
     free (line);
 }
+    serialport_close(port, &old_termio);
 
 } //main
 
