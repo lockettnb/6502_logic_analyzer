@@ -8,9 +8,10 @@
 #define __ARDUINO_SERIAL_LIB_H__
 
 #include <stdint.h>   // Standard types 
+#include <termios.h>  // POSIX terminal control definitions 
 
-int serialport_init(const char* serialport, int baud);
-int serialport_close(int fd);
+int serialport_init(const char* serialport, int baud, struct termios *old_toptions);
+int serialport_close(int fd, struct termios *old_toptions);
 int serialport_writebyte( int fd, uint8_t b);
 int serialport_write(int fd, const char* str);
 int serialport_read_until(int fd, char* buf, char until, int buf_max,int timeout);

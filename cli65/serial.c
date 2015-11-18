@@ -22,7 +22,7 @@
 // and a baud rate (bps) and connects to that port at that speed and 8N1.
 // opens the port in fully raw mode so you can send binary data.
 // returns valid fd, or -1 on error
-int serialport_init(const char* serialport, int baud)
+int serialport_init(const char* serialport, int baud, struct termios *old_toptions)
 {
     struct termios toptions;
     int fd;
@@ -31,16 +31,19 @@ int serialport_init(const char* serialport, int baud)
     fd = open(serialport, O_RDWR | O_NONBLOCK );
     
     if (fd == -1)  {
-        perror("serialport_init: Unable to open port ");
+        fprintf(stderr, "serialport_init: Unable to open port ");
         return -1;
     }
     
+    tcgetattr(fd, old_toptions); /* save current port settings */
+    
+
     //int iflags = TIOCM_DTR;
     //ioctl(fd, TIOCMBIS, &iflags);     // turn on DTR
     //ioctl(fd, TIOCMBIC, &iflags);    // turn off DTR
 
     if (tcgetattr(fd, &toptions) < 0) {
-        perror("serialport_init: Couldn't get term attributes");
+        fprintf(stderr, "serialport_init: Could not get term attributes");
         return -1;
     }
     speed_t brate = baud; // let you override switch below if needed
@@ -84,7 +87,7 @@ int serialport_init(const char* serialport, int baud)
     
     tcsetattr(fd, TCSANOW, &toptions);
     if( tcsetattr(fd, TCSAFLUSH, &toptions) < 0) {
-        perror("init_serialport: Couldn't set term attributes");
+        fprintf(stderr, "init_serialport: Could not set term attributes");
         return -1;
     }
 
@@ -92,8 +95,10 @@ int serialport_init(const char* serialport, int baud)
 }
 
 //
-int serialport_close( int fd )
+int serialport_close( int fd, struct termios *old_toptions)
 {
+    if(&old_toptions != NULL)
+         tcsetattr(fd, TCSANOW, old_toptions);
     return close( fd );
 }
 
@@ -112,7 +117,7 @@ int serialport_write(int fd, const char* str)
     int len = strlen(str);
     int n = write(fd, str, len);
     if( n!=len ) {
-        perror("serialport_write: couldn't write whole string\n");
+        fprintf(stderr, "serialport_write: Could not write whole string\n");
         return -1;
     }
     return 0;
