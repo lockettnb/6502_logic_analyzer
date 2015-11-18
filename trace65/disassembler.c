@@ -6,6 +6,14 @@
 *  2015/11/12 adapted for trace65
 *
 *
+* Copyright © 2015 by John Lockett
+* 
+* All rights reserved. All parts of this publication may be reproduced,
+* distributed, or transmitted in any form or by any means, including
+* photocopying, recording, or other electronic or mechanical methods
+* For permission requests, do not write to the publisher
+*
+*
 */
 
 #include <unistd.h>

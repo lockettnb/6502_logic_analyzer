@@ -4,7 +4,15 @@
 *   2015/11/03 adapted to work with 6502 logic analyser
 *
 *
+* Copyright © 2015 by John Lockett
+* 
+* All rights reserved. All parts of this publication may be reproduced,
+* distributed, or transmitted in any form or by any means, including
+* photocopying, recording, or other electronic or mechanical methods
+* For permission requests, do not write to the publisher
+*
 */
+
 
 #include <stdio.h>
 #include <stdlib.h>

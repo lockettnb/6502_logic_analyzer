@@ -1,9 +1,16 @@
-// 
-//  2015/05/08 created
-//  2015/05/14 read working on 502 CPU board!!!
-//  2015/11/03 adapted from ICE project for 6502 Logic Analyser
-//
-//
+/*
+*  2015/05/08 created
+*  2015/05/14 read working on 502 CPU board!!!
+*  2015/11/03 adapted from ICE project for 6502 Logic Analyser
+*
+*
+* Copyright © 2015 by John Lockett
+* 
+* All rights reserved. All parts of this publication may be reproduced,
+* distributed, or transmitted in any form or by any means, including
+* photocopying, recording, or other electronic or mechanical methods
+* For permission requests, do not write to the publisher
+*/
 
 #include <stdio.h>
 #include <string.h>

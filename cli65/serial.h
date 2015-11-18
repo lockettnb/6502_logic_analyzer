@@ -2,6 +2,9 @@
 // arduino-serial-lib -- simple library for reading/writing serial ports
 // 2006-2013, Tod E. Kurt, http://todbot.com/blog/
 //
+// 2015/11/17 added save/restore of ports termio settings (john)
+//
+
 
 
 #ifndef __ARDUINO_SERIAL_LIB_H__
