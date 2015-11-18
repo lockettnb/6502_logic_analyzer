@@ -58,8 +58,8 @@ uint32_t rw, sync, irq;
     if (arg[0])  start = strtol(arg[0], NULL, 10);
     if (arg[1])  end = strtol(arg[1], NULL, 10);
 
-    sprintf(msg, "display at %i to %i", start,end);
-    Serial.println(msg);
+//     sprintf(msg, "display at %i to %i", start,end);
+//     Serial.println(msg);
 
     for (i=start; i<=start+end; i++){
         address = bits[i] & 0xFFFF;
@@ -70,7 +70,7 @@ uint32_t rw, sync, irq;
         sprintf(msg, "%04lx  %02lx %02lx %02lx %02lx", address, data,rw,sync,irq);
         Serial.println(msg);
     }
-    Serial.println(">>display done");
+//     Serial.println(">>display done");
 }
 
 // *************************************************
@@ -105,7 +105,6 @@ int raddr;
 char result[16];
 
     if (arg[0]) {
-    Serial.println(arg[0]);
         raddr = strtol(arg[0], NULL, 16);
         trigger = raddr;
     } 
@@ -249,6 +248,8 @@ void xhelp(char *arg[])
     Serial.println("  T xxxx     -- set (T)igger Address xxxx");
     Serial.println("  R          -- (R)un ");
     Serial.println("  D          -- (D)isplay recorded data ");
+    Serial.println("  DD         -- (D)ata (D)ump recorded data ");
+    Serial.println("  H          -- Help");
 }
 
 
@@ -313,12 +314,16 @@ int i;
     pinMode(TESTPIN1, OUTPUT);
     pinMode(TESTPIN2, OUTPUT);
 
-// set all Port pins as inputs
+    // set all Port pins as inputs
     for(i=0; i<=27; i++) {
         pinMode(pin_table[i], INPUT);
     }
 
-Serial.begin(115200); 
+    Serial.begin(115200); 
+
+    // test pins; pulsed hight to show events like reading data etc
+    digitalWriteFast(TESTPIN1, LOW);
+    digitalWriteFast(TESTPIN2, LOW);
 }
 
  
@@ -333,9 +338,6 @@ int i,j;
 
 setup();
 
-// test pins; pulsed hight to show events like reading data etc
-digitalWriteFast(TESTPIN1, LOW);
-digitalWriteFast(TESTPIN2, LOW);
 
 while(1) {
     line[0]='\0';
