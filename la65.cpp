@@ -139,6 +139,12 @@ int fail=FALSE;
 int record=FALSE;
 char msg[MAXLINE];
 
+    if (arg[0]) {
+        if(strcmp(arg[0], "FREE") == 0){
+             record=TRUE;
+            Serial.println(arg[0]);
+        }
+    } 
     digitalWriteFast(TESTPIN1, LOW);
     digitalWriteFast(TESTPIN2, LOW);
     Serial.println("....run starting");

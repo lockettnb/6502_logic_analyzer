@@ -181,6 +181,21 @@ int rc;
 }
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void xrunfree(char *arg[])
+{
+char buf[32];
+int rc;
+
+    sprintf(buf, "r free\r");
+    rc = serialport_write(port, buf);    
+    if(rc !=0) {
+        fprintf(stderr, "Run: failed to write to Teensy serial port\n");
+        return;
+    }
+    read_response(rx_buffer);
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void xdisp(char *arg[])
 {
 char buf[32];
@@ -274,6 +289,7 @@ struct cmd cmdlist[] = {
     {"disp",    xdisp},
     {"dump",    xdump},
     {"run",     xrun   },
+    {"runfree", xrunfree   },
     {"alive",   xalive  },
     {"at",      xalive  },
     {"help",    xhelp},
@@ -281,7 +297,7 @@ struct cmd cmdlist[] = {
     {'\0',      NULL  }
 };
 
-signal(SIGINT, int_handler);
+// signal(SIGINT, int_handler);
 
 // open port then wait a bit for port to reset
 port = serialport_init( "/dev/ttyACM0", 115200, &old_termio);
