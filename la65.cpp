@@ -9,7 +9,7 @@
 * All rights reserved. All parts of this publication may be reproduced,
 * distributed, or transmitted in any form or by any means, including
 * photocopying, recording, or other electronic or mechanical methods
-* For permission requests, do not write to the publisher
+* No permission required ..... john.lockett@bellaliant.net
 */
 
 #include <stdio.h>
@@ -43,6 +43,8 @@ uint32_t bits[BUFFERSIZE];
 
 
 // *************************************************
+// attention command .... kind of like for modems 
+//
 void xattention(char *arg[])
 {
 // all message use println therefore send msg<cr><lf>
@@ -51,6 +53,8 @@ void xattention(char *arg[])
 }
 
 // *************************************************
+// display data buffer using start/end limits
+//
 void xdisplay(char *arg[])
 {
 int i;
@@ -81,6 +85,8 @@ uint32_t rw, sync, irq;
 }
 
 // *************************************************
+// ddump entire data buffer to serial port
+//
 void xdump(char *arg[])
 {
 int i;
@@ -106,6 +112,8 @@ uint32_t rw, sync, irq;
 
 
 // *************************************************
+//  set or display trigger address 
+//
 void xtrigger(char *arg[])
 {
 int raddr;
@@ -139,6 +147,7 @@ int fail=FALSE;
 int record=FALSE;
 char msg[MAXLINE];
 
+    // if argument is set to FREE do not wait for a trigger
     if (arg[0]) {
         if(strcmp(arg[0], "FREE") == 0){
              record=TRUE;
@@ -216,8 +225,7 @@ while (! done) {
 
 
     // we read data last as it takes memory a while to present it
-//     data0 =  GPIOD_PDIR & 0x00FF;
-
+    // each NOP instruction takes about 10 nanosec to execute
     __asm__ __volatile("NOP");
     __asm__ __volatile("NOP");
     __asm__ __volatile("NOP");
@@ -226,7 +234,8 @@ while (! done) {
     data0 =  GPIOD_PDIR & 0x00FF;
     __asm__ __volatile("NOP");
     data =  GPIOD_PDIR & 0x00FF;
-    if (data != data0) {
+    // make sure we read the same data twice
+    if (data != data0) {   
         fail = TRUE;
         done = TRUE;
     }
@@ -236,7 +245,7 @@ while (! done) {
     if(head >=BUFFERSIZE)  done=TRUE;
 
     digitalWriteFast(TESTPIN1, LOW);
-} 
+}  // while ...looping collecting data
 
     digitalWriteFast(TESTPIN2, LOW);
     interrupts();
@@ -247,7 +256,7 @@ while (! done) {
         Serial.println("  :run failure...");
         sprintf(msg, "data  %04lx %04lx", data0, data);
         Serial.println(msg);
-        sprintf(msg, "address %04lx %04lx", address0, address);
+        sprintf(msg, "address %04lx", address);
         Serial.println(msg);
     }
 }
@@ -268,7 +277,7 @@ void xhelp(char *arg[])
 
 // interpeter command list
 struct cmd {
-    const char *name;             // name of command
+    const char *name;       // name of command
     void (*f)(char **);     // command function
 };
 
@@ -324,6 +333,7 @@ void setup()
 byte pin_table[] = {18,19,17,16,30,29,27,28,12,11,13,10,9,23,22,15,5,21,20,6,8,7,14,2,25,32,1,0};
 int i;
 
+    // test pins used to show trigger and data read cycles
     pinMode(TESTPIN1, OUTPUT);
     pinMode(TESTPIN2, OUTPUT);
 
@@ -334,7 +344,7 @@ int i;
 
     Serial.begin(115200); 
 
-    // test pins; pulsed hight to show events like reading data etc
+    // test pins; pulsed hight to show events like reading data
     digitalWriteFast(TESTPIN1, LOW);
     digitalWriteFast(TESTPIN2, LOW);
 }
@@ -356,9 +366,10 @@ while(1) {
     line[0]='\0';
     arg_list[0]=NULL;
 
+    // print eno-of-transmission after each command received on serial port
     Serial.println("<eot>");
-    // read command line from serial port
 
+    // read command line from serial port
     xreadline(line);
     strupr(line);
     command = strtok(line," ");     // command should be the first thing

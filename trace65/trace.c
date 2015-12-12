@@ -7,8 +7,7 @@
 * All rights reserved. All parts of this publication may be reproduced,
 * distributed, or transmitted in any form or by any means, including
 * photocopying, recording, or other electronic or mechanical methods
-* For permission requests, do not write to the publisher
-*
+* No permission required ..... john.lockett@bellaliant.net*
 *
 */
 
@@ -47,15 +46,6 @@ char *program_name;
 struct trace_node tbuf[TRACE_SIZE];
 
 
-
-/* Option Flags set by `--options' */
-int verbose = FALSE;
-int help    = FALSE;
-int version = FALSE;
-int debug   = FALSE;
-
-    
-
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 int xdis(int node)
 {
@@ -63,6 +53,8 @@ int xdis(int node)
  int step;
  int i;
 
+// some genius supplied the sync single just to help us know when
+// the 6502 is fetching an instruction
 if(tbuf[node].sync == 1) {
     // instruction ... disassemble required
     for(i=0; i<=5; i++) 
@@ -98,6 +90,7 @@ const char s[2] = " ";
         exit(FAIL);
     }
 
+    // suck up the full file into a buffer
     while (fgets(buf,BUFFER_SIZE, fp)!=NULL) {
         buf[strcspn(buf, "\n")] = 0;
         debug_print("<%s>\n",buf);
@@ -116,6 +109,7 @@ const char s[2] = " ";
         fclose(fp);
         debug_print("Load complete with %i nodes\n",node);
 
+    // run thru the buffer printing the assembler
     for(i=0; i<=node-1; i++){
         i = i + (xdis(i)-1);
     }

@@ -9,7 +9,7 @@
 * All rights reserved. All parts of this publication may be reproduced,
 * distributed, or transmitted in any form or by any means, including
 * photocopying, recording, or other electronic or mechanical methods
-* For permission requests, do not write to the publisher
+* No permission required .... john.lockett@bellaliant.net
 *
 */
 
