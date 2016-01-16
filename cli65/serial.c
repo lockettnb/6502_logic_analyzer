@@ -76,8 +76,9 @@ int serialport_init(const char* serialport, int baud, struct termios *old_toptio
 
     toptions.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
     toptions.c_iflag &= ~(IXON | IXOFF | IXANY); // turn off s/w flow ctrl
+    toptions.c_iflag |= IGNCR ; // ignore CR on input
 
-    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); // make raw
+    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHONL | ISIG); // make raw
     toptions.c_oflag &= ~OPOST; // make raw
 
     // see: http://unixwiz.net/techtips/termios-vmin-vtime.html
